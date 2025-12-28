@@ -1,0 +1,13 @@
+npm install
+
+npm run dev
+
+
+
+
+As the error states, you need the set
+
+"esModuleInterop": true,
+
+
+npm install --save-dev @types/cors

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-5">
+
+<h2 class="mb-4">Todo App</h2>
+
+<div class="input-group mb-3">
+  <input id="title" class="form-control" placeholder="New todo">
+  <button class="btn btn-primary" onclick="addTodo()">Add</button>
+</div>
+
+<ul id="list" class="list-group"></ul>
+
+<script>
+const API = "/api/todos";
+
+async function loadTodos() {
+  const res = await fetch(API);
+  const todos = await res.json();
+  list.innerHTML = "";
+  todos.forEach(t => {
+    list.innerHTML += `
+      <li class="list-group-item d-flex justify-content-between">
+        <span style="text-decoration:${t.completed ? 'line-through' : 'none'}">
+          ${t.title}
+        </span>
+        <div>
+          <button class="btn btn-sm btn-success" onclick="toggle(${t.id}, ${!t.completed})">✓</button>
+          <button class="btn btn-sm btn-danger" onclick="removeTodo(${t.id})">✕</button>
+        </div>
+      </li>`;
+  });
+}
+
+async function addTodo() {
+  await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: title.value })
+  });
+  title.value = "";
+  loadTodos();
+}
+
+async function toggle(id, completed) {
+  await fetch(API + "/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ completed })
+  });
+  loadTodos();
+}
+
+async function removeTodo(id) {
+  await fetch(API + "/" + id, { method: "DELETE" });
+  loadTodos();
+}
+
+loadTodos();
+</script>
+
+</body>
+</html>
